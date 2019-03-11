@@ -1,0 +1,2 @@
+pagespeed_mod_prebuilt_tar: "{{ pagespeed_download_path }}/pagespeed-mod-{{ _pagespeed_mod_git_version.stdout }}.tar.gz"
+pagespeed_mod_prebuilt_bin: "{{ pagespeed_download_path }}/pagespeed-mod-{{ _pagespeed_mod_git_version.stdout }}.bin.tar.gz"

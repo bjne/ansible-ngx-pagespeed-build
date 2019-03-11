@@ -1,0 +1,20 @@
+- name: clone pagespeed-mod bare repo
+  git:
+    repo: "{{ pagespeed_mod_repo }}"
+    dest: "{{ pagespeed_download_path }}/pagespeed-mod.git"
+    bare: true
+    update: true
+
+- name: get psol version
+  command: "git rev-parse {{ pagespeed_mod_git_version }}"
+  register: _pagespeed_mod_git_version
+  args:
+    chdir: "{{ pagespeed_download_path }}/pagespeed-mod.git"
+
+- name: check if prebuilt psol bin exists
+  stat:
+    path: "{{ pagespeed_mod_prebuilt_bin }}"
+  register: _pagespeed_mod_bin
+
+- include: psol_build.yml
+  when: _pagespeed_mod_bin.stat.exists == False

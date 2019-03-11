@@ -1,0 +1,45 @@
+- name: check if prebuilt psol tar exists
+  stat:
+    path: "{{ pagespeed_mod_prebuilt_tar }}"
+  register: _pagespeed_mod_tar
+
+- include: psol_prebuild_tar.yml
+  when: _pagespeed_mod_tar.stat.exists == False
+
+- name: uncompress pagespeed-mod tar
+  unarchive:
+    src: "{{ pagespeed_mod_prebuilt_tar }}"
+    dest: "{{ pagespeed_build_path }}"
+    copy: no
+
+- name: modify build_psol.sh
+  lineinfile:
+    path: "{{ pagespeed_build_path }}/pagespeed-mod/install/build_psol.sh"
+    line: |
+      REPO={{ pagespeed_mod_repo }}
+    regexp: '^REPO='
+
+- name: modify build_psol.sh
+  lineinfile:
+    path: "{{ pagespeed_build_path }}/pagespeed-mod/install/build_psol.sh"
+    line: |
+      COMMIT={{ _pagespeed_mod_git_version.stdout }}
+    regexp: '^COMMIT='
+
+- name: build psol
+  shell: ./install/build_psol.sh
+  args:
+    chdir: "{{ pagespeed_build_path }}/pagespeed-mod"
+
+- name: get psol version
+  shell: echo psol-*.tar.gz
+  register: _psol_build_file
+  args:
+    warn: false
+    chdir: "{{ pagespeed_build_path }}/pagespeed-mod"
+
+- name: copy psol archive
+  copy:
+    src: "{{ pagespeed_build_path }}/pagespeed-mod/{{ _psol_build_file.stdout }}"
+    dest: "{{ pagespeed_mod_prebuilt_bin }}"
+    remote_src: true

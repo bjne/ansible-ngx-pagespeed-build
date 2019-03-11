@@ -1,0 +1,33 @@
+- name: recreate build directory
+  file:
+    path: "{{ pagespeed_build_path }}"
+    state: "{{ item }}"
+  with_items:
+  - absent
+  - directory
+
+- include: psol.yml
+
+- name: clone incubator-pagespeed-ngx to local bare repo
+  git:
+    repo: "{{ pagespeed_ngx_repo }}"
+    dest: "{{ pagespeed_download_path }}/pagespeed-ngx.git"
+    bare: true
+    update: true
+
+- name: clone from local bare repository
+  git:
+    repo: "{{ pagespeed_download_path }}/pagespeed-ngx.git"
+    dest: "{{ pagespeed_build_path }}/pagespeed-ngx"
+    version: "{{ pagespeed_ngx_git_version }}"
+    recursive: false
+
+- name: unarchive prebuilt psol
+  unarchive:
+    src: "{{ pagespeed_mod_prebuilt_bin }}"
+    dest: "{{ pagespeed_build_path }}/pagespeed-ngx"
+    copy: no
+
+- name: export openresty_module_path
+  set_fact:
+    openresty_module_path: "{{ openresty_module_path|default({})|combine({module_name: pagespeed_build_path + '/pagespeed-ngx'})}}"

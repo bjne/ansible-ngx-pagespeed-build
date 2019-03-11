@@ -1,0 +1,10 @@
+pagespeed_download_path: /usr/src/pagespeed/download
+pagespeed_build_path: /usr/src/pagespeed/build
+
+pagespeed_ngx_repo: "https://github.com/apache/incubator-pagespeed-ngx"
+pagespeed_ngx_git_version: c69649a
+
+pagespeed_mod_repo: "https://github.com/apache/incubator-pagespeed-mod"
+pagespeed_mod_git_version: 7659ff7
+
+

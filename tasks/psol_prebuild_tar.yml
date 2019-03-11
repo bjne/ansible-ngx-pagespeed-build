@@ -1,0 +1,27 @@
+- name: clone from local bare repository
+  git:
+    repo: "{{ pagespeed_download_path }}/pagespeed-mod.git"
+    dest: "{{ pagespeed_build_path }}/pagespeed-mod"
+    version: "{{ pagespeed_mod_git_version }}"
+    recursive: true
+
+- name: generate LASTCHANGE.in
+  shell: >
+    echo "LASTCHANGE=$(git rev-list --all --count)" > LASTCHANGE.in
+  args:
+    warn: false
+    chdir: "{{ pagespeed_build_path }}/pagespeed-mod"
+
+- name: create prebuilt tar
+  command: >-
+    tar zcf {{ pagespeed_mod_prebuilt_tar }}
+    --exclude pagespeed-mod/.git pagespeed-mod
+  args:
+    warn: false
+    chdir: "{{ pagespeed_build_path }}"
+
+- name: remove git directory
+  file:
+    path: "{{ pagespeed_build_path }}/pagespeed-mod"
+    state: absent
+
