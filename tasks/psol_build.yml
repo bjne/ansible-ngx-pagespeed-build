@@ -26,6 +26,13 @@
       COMMIT={{ _pagespeed_mod_git_version.stdout }}
     regexp: '^COMMIT='
 
+- name: modify build_psol.sh
+  lineinfile:
+    path: "{{ pagespeed_build_path }}/pagespeed-mod/install/build_psol.sh"
+    line: |
+      MAKE_ARGS=(V=1 -j20 BUILDTYPE=$buildtype)
+    regexp: '^MAKE_ARGS='
+
 - name: build psol
   shell: ./install/build_psol.sh
   args:
